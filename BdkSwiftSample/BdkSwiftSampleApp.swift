@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct BdkSwiftSampleApp: App {
+    @StateObject var wallet = WalletViewModel();
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            WalletView().environmentObject(wallet).preferredColorScheme(.dark)
         }
     }
 }
