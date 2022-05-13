@@ -1,25 +1,23 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "bdk-swift",
-        "repositoryURL": "https://github.com/bitcoindevkit/bdk-swift",
-        "state": {
-          "branch": null,
-          "revision": "f2b857a609001b29f6663c9a2646a0d814d0e7e9",
-          "version": "0.1.4"
-        }
-      },
-      {
-        "package": "CodeScanner",
-        "repositoryURL": "https://github.com/twostraws/CodeScanner",
-        "state": {
-          "branch": null,
-          "revision": "8a9ce909a4ea502d4a2ccf327ae8c16b7e48e740",
-          "version": "1.1.0"
-        }
+  "pins" : [
+    {
+      "identity" : "bdk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bitcoindevkit/bdk-swift",
+      "state" : {
+        "revision" : "5622b070479578490c43cb2f31200215a2c1d1b6",
+        "version" : "0.3.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "codescanner",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/twostraws/CodeScanner",
+      "state" : {
+        "revision" : "8a9ce909a4ea502d4a2ccf327ae8c16b7e48e740",
+        "version" : "1.1.0"
+      }
+    }
+  ],
+  "version" : 2
 }

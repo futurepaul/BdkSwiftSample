@@ -35,9 +35,9 @@ struct HomeView: View {
                 BasicButton(action: { goToTxs = true}, text: "transaction history")
             }.padding(.bottom, 10)
             switch viewModel.state {
-                case .loaded(let wallet):
+                case .loaded(let wallet, let blockchain):
                     do {
-                        SendReceiveButtons(wallet: wallet)
+                        SendReceiveButtons(wallet: wallet, blockchain: blockchain)
                     }
                 default: do { }
             }

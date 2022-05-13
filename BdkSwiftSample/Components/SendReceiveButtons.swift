@@ -9,7 +9,8 @@ import SwiftUI
 import BitcoinDevKit
 
 struct SendReceiveButtons: View {
-    var wallet: OnlineWallet
+    var wallet: Wallet
+    var blockchain: Blockchain
     
     func getWidth(w: CGFloat) -> CGFloat {
         return (w - 10.0) / 2.0
@@ -26,10 +27,12 @@ struct SendReceiveButtons: View {
         // Invisible link to Send
         NavigationLink(destination: SendView(onSend: { recipient, amount in
             do {
-                let psbt = try PartiallySignedBitcoinTransaction(wallet: wallet, recipient: recipient, amount: amount, feeRate: nil)
+                let txBuilder = TxBuilder().addRecipient(address: recipient, amount: amount)
+                let psbt = try txBuilder.finish(wallet: wallet)
                 try wallet.sign(psbt: psbt)
-                let transaction = try wallet.broadcast(psbt: psbt)
-                print(transaction)
+                try blockchain.broadcast(psbt: psbt)
+                let txid = psbt.txid()
+                print(txid)
             } catch let error {
                 print(error)
             }

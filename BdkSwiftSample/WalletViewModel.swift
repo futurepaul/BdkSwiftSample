@@ -13,7 +13,7 @@ class WalletViewModel: ObservableObject {
         case empty
         case loading
         case failed(Error)
-        case loaded(OnlineWallet)
+        case loaded(Wallet, Blockchain)
     }
     
     enum SyncState {
@@ -33,13 +33,14 @@ class WalletViewModel: ObservableObject {
     
     func load() {
         state = .loading
-        let db = DatabaseConfig.memory(junk: "")
+        let db = DatabaseConfig.memory
         let descriptor = "wpkh(tprv8ZgxMBicQKsPeSitUfdxhsVaf4BXAASVAbHypn2jnPcjmQZvqZYkeqx7EHQTWvdubTSDa5ben7zHC7sUsx4d8tbTvWdUtHzR8uhHg2CW7MT/*)"
         let electrum = ElectrumConfig(url: "ssl://electrum.blockstream.info:60002", socks5: nil, retry: 5, timeout: nil, stopGap: 10)
-        let blockchain = BlockchainConfig.electrum(config: electrum)
+        let blockchainConfig = BlockchainConfig.electrum(config: electrum)
         do {
-            let wallet = try OnlineWallet(descriptor: descriptor, changeDescriptor: nil, network: Network.testnet, databaseConfig: db, blockchainConfig: blockchain)
-            state = State.loaded(wallet)
+            let blockchain = try Blockchain(config: blockchainConfig)
+            let wallet = try Wallet(descriptor: descriptor, changeDescriptor: nil, network: Network.testnet, databaseConfig: db)
+            state = State.loaded(wallet, blockchain)
         } catch let error {
             state = State.failed(error)
         }
@@ -48,11 +49,11 @@ class WalletViewModel: ObservableObject {
     func sync() {
             self.balanceText = "syncing"
         switch self.state {
-        case .loaded(let wallet):
+        case .loaded(let wallet, let blockchain):
             self.syncState = .syncing
             do {
                 // TODO use this progress update to show "syncing"
-                try wallet.sync(progressUpdate: Progress(), maxAddressParam: nil)
+                try wallet.sync(blockchain: blockchain, progress: nil)
                 self.syncState = .synced
                 self.balance = try wallet.getBalance()
                 self.balanceText = String(format: "%.8f", Double(balance) / Double(100000000))
