@@ -23,7 +23,7 @@ struct ReceiveView: View {
     
     func getAddress() {
         switch viewModel.state {
-            case .loaded(let wallet):
+            case .loaded(let wallet, _):
                 do {
                     address = wallet.getNewAddress()
                 }

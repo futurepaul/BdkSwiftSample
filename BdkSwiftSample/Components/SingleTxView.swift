@@ -35,7 +35,7 @@ struct SingleTxView: View {
                     }
                     HStack {
                         Text("Fees:").textStyle(BasicTextStyle(white: true, bold: true))
-                        Text(String(details.fees ?? 0)).textStyle(BasicTextStyle(white: true))
+                        Text(String(details.fee ?? 0)).textStyle(BasicTextStyle(white: true))
                     }
                     HStack {
                         Text("Txid:").textStyle(BasicTextStyle(white: true, bold: true))
@@ -60,7 +60,7 @@ struct SingleTxView: View {
                     }
                     HStack {
                         Text("Fees:").textStyle(BasicTextStyle(white: true, bold: true))
-                        Text(String(details.fees ?? 0)).textStyle(BasicTextStyle(white: true))
+                        Text(String(details.fee ?? 0)).textStyle(BasicTextStyle(white: true))
                     }
                     HStack {
                         Text("Txid:").textStyle(BasicTextStyle(white: true, bold: true))
@@ -81,6 +81,6 @@ struct SingleTxView: View {
 
 struct SingleTxView_Previews: PreviewProvider {
     static var previews: some View {
-        SingleTxView(transaction: Transaction.confirmed(details: TransactionDetails(fees: nil, received: 1000, sent: 10000, txid: "some-other-tx-id"), confirmation: Confirmation(height: 20087, timestamp: 1635863544)))
+        SingleTxView(transaction: Transaction.confirmed(details: TransactionDetails(fee: nil, received: 1000, sent: 10000, txid: "some-other-tx-id"), confirmation: BlockTime(height: 20087, timestamp: 1635863544)))
     }
 }

@@ -9,12 +9,6 @@ import SwiftUI
 import Combine
 import BitcoinDevKit
 
-class Progress : BdkProgress {
-    func update(progress: Float, message: String?) {
-        print("progress", progress, message as Any)
-    }
-}
-
 struct WalletView: View {
     @EnvironmentObject var viewModel: WalletViewModel
     
@@ -31,7 +25,7 @@ struct WalletView: View {
                 VStack {Text("error")}
             case .loading:
                 VStack {Text("error")}
-            case .loaded(_):
+            case .loaded(_, _):
                 HomeView()
             }
         }.onAppear(perform: viewModel.load)
