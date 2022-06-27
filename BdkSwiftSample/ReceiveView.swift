@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreImage.CIFilterBuiltins
+import BitcoinDevKit
 
 let context = CIContext()
 let filter = CIFilter.qrCodeGenerator()
@@ -25,7 +26,10 @@ struct ReceiveView: View {
         switch viewModel.state {
             case .loaded(let wallet, _):
                 do {
-                    address = wallet.getNewAddress()
+                        let addressInfo = try wallet.getAddress(addressIndex: AddressIndex.new)
+                        address = addressInfo.address
+                } catch {
+                    address = "ERROR"
                 }
             default: do { }
         }

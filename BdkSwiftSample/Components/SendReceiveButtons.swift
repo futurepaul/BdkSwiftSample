@@ -29,7 +29,7 @@ struct SendReceiveButtons: View {
             do {
                 let txBuilder = TxBuilder().addRecipient(address: recipient, amount: amount)
                 let psbt = try txBuilder.finish(wallet: wallet)
-                try wallet.sign(psbt: psbt)
+                let _ = try wallet.sign(psbt: psbt)
                 try blockchain.broadcast(psbt: psbt)
                 let txid = psbt.txid()
                 print(txid)
