@@ -59,7 +59,10 @@ struct ReceiveView: View {
                     .frame(width: 200, height: 200)
                 Spacer()
                 Text(splitAddress(address: address).0).textStyle(BasicTextStyle(white: true))
-                Text(splitAddress(address: address).1).textStyle(BasicTextStyle(white: true))
+                Text(splitAddress(address:  address).1).textStyle(BasicTextStyle(white: true))
+                    .onTapGesture(count: 1) {
+                        UIPasteboard.general.string = address
+                    }
                 Spacer()
             }.contextMenu {
                 Button(action: {
