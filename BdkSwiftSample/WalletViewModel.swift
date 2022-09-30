@@ -8,6 +8,16 @@
 import Foundation
 import BitcoinDevKit
 
+extension TransactionDetails: Comparable {
+    public static func < (lhs: TransactionDetails, rhs: TransactionDetails) -> Bool {
+        
+        let lhs_timestamp: UInt64 = lhs.confirmationTime?.timestamp ?? UInt64.max;
+        let rhs_timestamp: UInt64 = rhs.confirmationTime?.timestamp ?? UInt64.max;
+        
+        return lhs_timestamp < rhs_timestamp
+    }
+}
+
 class WalletViewModel: ObservableObject {
     enum State {
         case empty
@@ -28,8 +38,7 @@ class WalletViewModel: ObservableObject {
     @Published private(set) var syncState = SyncState.empty
     @Published private(set) var balance: UInt64 = 0
     @Published private(set) var balanceText = "sync plz"
-    @Published private(set) var transactions: [BitcoinDevKit.Transaction] = []
-    
+    @Published private(set) var transactions: [BitcoinDevKit.TransactionDetails] = []
     
     func load() {
         state = .loading
@@ -55,22 +64,10 @@ class WalletViewModel: ObservableObject {
                 // TODO use this progress update to show "syncing"
                 try wallet.sync(blockchain: blockchain, progress: nil)
                 self.syncState = .synced
-                self.balance = try wallet.getBalance()
+                self.balance = try wallet.getBalance().confirmed
                 self.balanceText = String(format: "%.8f", Double(balance) / Double(100000000))
-                let wallet_transactions = try wallet.getTransactions()
-                transactions = wallet_transactions.sorted(by: {
-                switch $0 {
-                case .confirmed(_, let confirmation_a):
-                    switch $1 {
-                    case .confirmed(_, let confirmation_b): return confirmation_a.timestamp > confirmation_b.timestamp
-                    default: return false
-                    }
-                default:
-                    switch $1 {
-                    case .unconfirmed(_): return true
-                    default: return false
-                    }
-                } })
+                let wallet_transactions: [TransactionDetails] = try wallet.listTransactions()
+                transactions = wallet_transactions.sorted().reversed()
           } catch let error {
               print(error)
               self.syncState = .failed(error)
