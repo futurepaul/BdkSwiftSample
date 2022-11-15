@@ -27,11 +27,13 @@ struct SendReceiveButtons: View {
         // Invisible link to Send
         NavigationLink(destination: SendView(onSend: { recipient, amount in
             do {
-                let txBuilder = TxBuilder().addRecipient(address: recipient, amount: amount)
-                let psbt = try txBuilder.finish(wallet: wallet)
-                let _ = try wallet.sign(psbt: psbt)
-                try blockchain.broadcast(psbt: psbt)
-                let txid = psbt.txid()
+                let address = try Address(address: recipient)
+                let script = address.scriptPubkey()
+                let txBuilder = TxBuilder().addRecipient(script: script, amount: amount)
+                let details = try txBuilder.finish(wallet: wallet)
+                let _ = try wallet.sign(psbt: details.psbt)
+                try blockchain.broadcast(psbt: details.psbt)
+                let txid = details.psbt.txid()
                 print(txid)
             } catch let error {
                 print(error)
