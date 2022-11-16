@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/bitcoindevkit/bdk-swift",
       "state" : {
-        "revision" : "d7c151a7aef3741599fb3e50a873e63a4a0fda69",
-        "version" : "0.6.0"
+        "revision" : "e4f3982da103a0cc4c616d8b36bb658e4247a8ae",
+        "version" : "0.7.1"
       }
     },
     {
