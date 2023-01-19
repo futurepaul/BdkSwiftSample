@@ -42,38 +42,61 @@ class WalletViewModel: ObservableObject {
     
     func load() {
         state = .loading
-        let db = DatabaseConfig.memory
-        do {
-        let descriptor = try Descriptor.init(descriptor: "wpkh(tprv8ZgxMBicQKsPeSitUfdxhsVaf4BXAASVAbHypn2jnPcjmQZvqZYkeqx7EHQTWvdubTSDa5ben7zHC7sUsx4d8tbTvWdUtHzR8uhHg2CW7MT/*)", network: Network.testnet)
-        let electrum = ElectrumConfig(url: "ssl://electrum.blockstream.info:60002", socks5: nil, retry: 5, timeout: nil, stopGap: 10, validateDomain: true)
-        let blockchainConfig = BlockchainConfig.electrum(config: electrum)
-            let blockchain = try Blockchain(config: blockchainConfig)
-            let wallet = try Wallet(descriptor: descriptor, changeDescriptor: nil, network: Network.testnet, databaseConfig: db)
-            state = State.loaded(wallet, blockchain)
-        } catch let error {
-            state = State.failed(error)
+        
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let db = DatabaseConfig.memory
+            do {
+            let descriptor = try Descriptor.init(descriptor: "wpkh(tprv8ZgxMBicQKsPeSitUfdxhsVaf4BXAASVAbHypn2jnPcjmQZvqZYkeqx7EHQTWvdubTSDa5ben7zHC7sUsx4d8tbTvWdUtHzR8uhHg2CW7MT/*)", network: Network.testnet)
+            let electrum = ElectrumConfig(url: "ssl://electrum.blockstream.info:60002", socks5: nil, retry: 5, timeout: nil, stopGap: 10, validateDomain: true)
+            let blockchainConfig = BlockchainConfig.electrum(config: electrum)
+                let blockchain = try Blockchain(config: blockchainConfig)
+                let wallet = try Wallet(descriptor: descriptor, changeDescriptor: nil, network: Network.testnet, databaseConfig: db)
+                
+                DispatchQueue.main.async {
+                    self.state = State.loaded(wallet, blockchain)
+                }
+            } catch let error {
+                DispatchQueue.main.async {
+                    self.state = State.failed(error)
+                }
+            }
         }
     }
     
     func sync() {
-            self.balanceText = "syncing"
-        switch self.state {
-        case .loaded(let wallet, let blockchain):
-            self.syncState = .syncing
-            do {
-                // TODO use this progress update to show "syncing"
-                try wallet.sync(blockchain: blockchain, progress: nil)
-                self.syncState = .synced
-                self.balance = try wallet.getBalance().confirmed
-                self.balanceText = String(format: "%.8f", Double(balance) / Double(100000000))
-                let wallet_transactions: [TransactionDetails] = try wallet.listTransactions()
-                transactions = wallet_transactions.sorted().reversed()
-          } catch let error {
-              print(error)
-              self.syncState = .failed(error)
-          }
-        default: do { }
-            print("default")
+        self.balanceText = "syncing"
+        
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+
+            switch self.state {
+            case .loaded(let wallet, let blockchain):
+                DispatchQueue.main.async {
+                    self.syncState = .syncing
+                }
+                do {
+                    // TODO use this progress update to show "syncing"
+                    try wallet.sync(blockchain: blockchain, progress: nil)
+                    let balance = try wallet.getBalance().confirmed
+                    let wallet_transactions: [TransactionDetails] = try wallet.listTransactions()
+
+                    DispatchQueue.main.async {
+                        self.syncState = .synced
+                        self.balance = balance
+                        self.balanceText = String(format: "%.8f", Double(self.balance) / Double(100000000))
+                        self.transactions = wallet_transactions.sorted().reversed()
+                    }
+              } catch let error {
+                  print(error)
+                  DispatchQueue.main.async {
+                      self.syncState = .failed(error)
+                  }
+              }
+            default: do { }
+                print("default")
+            }
         }
     }
 }
