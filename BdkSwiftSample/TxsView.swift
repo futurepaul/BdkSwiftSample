@@ -40,6 +40,7 @@ struct TxsView: View {
 struct TxsView_Previews: PreviewProvider {
     static var previews: some View {
         TxsView()
+            .environmentObject(WalletViewModel())
     }
 }
 
