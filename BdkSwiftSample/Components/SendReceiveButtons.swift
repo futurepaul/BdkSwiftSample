@@ -11,19 +11,19 @@ import BitcoinDevKit
 struct SendReceiveButtons: View {
     var wallet: Wallet
     var blockchain: Blockchain
-    
+
     func getWidth(w: CGFloat) -> CGFloat {
         return (w - 10.0) / 2.0
     }
-    
-    
+
+
     @State private var goToSend = false
     @State private var goToReceive = false
-    
+
     var body: some View {
         // Invisible link to receive
         NavigationLink(destination: ReceiveView(), isActive: $goToReceive) { EmptyView() }
-        
+
         // Invisible link to Send
         NavigationLink(destination: SendView(onSend: { recipient, amount in
             do {
@@ -31,8 +31,9 @@ struct SendReceiveButtons: View {
                 let script = address.scriptPubkey()
                 let txBuilder = TxBuilder().addRecipient(script: script, amount: amount)
                 let details = try txBuilder.finish(wallet: wallet)
-                let _ = try wallet.sign(psbt: details.psbt)
-                try blockchain.broadcast(psbt: details.psbt)
+                let _ = try wallet.sign(psbt: details.psbt, signOptions: nil)
+                let tx = details.psbt.extractTx()
+                try blockchain.broadcast(transaction: tx)
                 let txid = details.psbt.txid()
                 print(txid)
             } catch let error {

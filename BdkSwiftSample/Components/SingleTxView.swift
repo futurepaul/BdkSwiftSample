@@ -70,6 +70,6 @@ struct SingleTxView: View {
 
 struct SingleTxView_Previews: PreviewProvider {
     static var previews: some View {
-        SingleTxView(transactionDetails: TransactionDetails(fee: 250, received: 1000, sent: 10000, txid: "some-other-tx-id", confirmationTime: BlockTime(height: 20087, timestamp: 1635863544)))
+        SingleTxView(transactionDetails: TransactionDetails(transaction: nil, fee: 250, received: 1000, sent: 10000, txid: "some-other-tx-id", confirmationTime: BlockTime(height: 20087, timestamp: 1635863544)))
     }
 }

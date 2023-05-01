@@ -27,7 +27,7 @@ struct ReceiveView: View {
             case .loaded(let wallet, _):
                 do {
                         let addressInfo = try wallet.getAddress(addressIndex: AddressIndex.new)
-                        address = addressInfo.address
+                    address = addressInfo.address.asString()
                 } catch {
                     address = "ERROR"
                 }

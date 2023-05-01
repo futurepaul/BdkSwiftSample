@@ -18,6 +18,16 @@ extension TransactionDetails: Comparable {
     }
 }
 
+extension TransactionDetails: Equatable {
+    public static func == (lhs: TransactionDetails, rhs: TransactionDetails) -> Bool {
+        
+        let lhs_timestamp: UInt64 = lhs.confirmationTime?.timestamp ?? UInt64.max;
+        let rhs_timestamp: UInt64 = rhs.confirmationTime?.timestamp ?? UInt64.max;
+        
+        return lhs_timestamp == rhs_timestamp
+    }
+}
+
 class WalletViewModel: ObservableObject {
     enum State {
         case empty
@@ -80,7 +90,7 @@ class WalletViewModel: ObservableObject {
                     // TODO use this progress update to show "syncing"
                     try wallet.sync(blockchain: blockchain, progress: nil)
                     let balance = try wallet.getBalance().confirmed
-                    let wallet_transactions: [TransactionDetails] = try wallet.listTransactions()
+                    let wallet_transactions: [TransactionDetails] = try wallet.listTransactions(includeRaw: false)
 
                     DispatchQueue.main.async {
                         self.syncState = .synced

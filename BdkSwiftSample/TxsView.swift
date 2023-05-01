@@ -26,7 +26,7 @@ struct TxsView: View {
                 if viewModel.transactions.isEmpty {
                     Text("No transactions yet.").padding()
                 } else {
-                    ForEach(viewModel.transactions, id: \.self) { transaction in
+                    ForEach(viewModel.transactions, id: \.self.txid) { transaction in
                         SingleTxView(transactionDetails: transaction)
                     }
                 }
